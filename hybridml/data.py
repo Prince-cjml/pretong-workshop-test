@@ -28,8 +28,14 @@ def assignment_seed(repo_id: str) -> int:
 
 def make_dataset(seed: int) -> tuple[np.ndarray, np.ndarray]:
     rng = np.random.default_rng(seed)
-    features = rng.normal(0.0, 1.0, size=(1536, 12)).astype(np.float32)
-    weights = rng.normal(0.0, 1.0, size=(12, 3)).astype(np.float32)
-    logits = features @ weights
-    labels = np.argmax(logits + 0.08 * rng.normal(size=logits.shape), axis=1)
-    return features, labels.astype(np.int64)
+    samples = 1536
+    input_dim = 12
+    classes = 3
+    centers = rng.normal(0.0, 1.2, size=(classes, input_dim)).astype(np.float32)
+    labels = np.arange(samples, dtype=np.int64) % classes
+    rng.shuffle(labels)
+    features = centers[labels] + rng.normal(0.0, 0.35, size=(samples, input_dim))
+    scale = rng.uniform(0.6, 1.4, size=(input_dim,)).astype(np.float32)
+    bias = rng.normal(0.0, 0.2, size=(input_dim,)).astype(np.float32)
+    features = features.astype(np.float32) * scale + bias
+    return features.astype(np.float32), labels
