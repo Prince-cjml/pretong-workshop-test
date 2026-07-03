@@ -1,0 +1,62 @@
+name: Student feedback
+
+on:
+  push:
+    branches:
+      - submission
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: feedback-${{ github.repository }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  public-checks:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - name: Reject force-push event
+        if: github.event_name == 'push' && github.event.forced == true
+        run: |
+          echo "Force pushes are not permitted on submission."
+          exit 1
+
+      - name: Checkout complete history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          ref: submission
+
+      - name: Fetch trusted course refs
+        env:
+          COURSE_UPSTREAM_URL: >-
+            https://github.com/Prince-cjml/pretong-workshop-test.git
+        run: |
+          if git remote get-url course >/dev/null 2>&1; then
+            git remote set-url course "$COURSE_UPSTREAM_URL"
+          else
+            git remote add course "$COURSE_UPSTREAM_URL"
+          fi
+          git fetch --force --prune course             "+refs/tags/course/*:refs/tags/course/*"             "+refs/heads/course/*:refs/remotes/course/*"
+
+      - name: Run preflight Git checks
+        run: |
+          python .course/local_check.py preflight
+          python .course/local_check.py history
+
+      - name: Set up locked Conda environment
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: hybridml-rescue
+          create-args: >-
+            --file conda-linux-64.lock
+          cache-environment: true
+          cache-downloads: true
+
+      - name: Run public project checks
+        shell: bash -el {0}
+        run: bash scripts/check.sh

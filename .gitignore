@@ -1,0 +1,12 @@
+.venv/
+build/
+*.so
+*.o
+*.a
+__pycache__/
+.pytest_cache/
+.env
+
+artifacts/*.ckpt
+!artifacts/model.ckpt
+!artifacts/.gitkeep

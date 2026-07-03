@@ -1,0 +1,17 @@
+name: hybridml-rescue
+channels:
+  - pytorch
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.10.14
+  - pytorch=2.1.2
+  - cpuonly
+  - numpy=1.26.4
+  - packaging=24.2
+  - tomli=2.2.1
+  - pytest=8.3.4
+  - cmake=3.31.*
+  - ninja
+  - cxx-compiler
+  - eigen=3.4

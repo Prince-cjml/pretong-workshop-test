@@ -1,0 +1,7 @@
+[training]
+epochs = 40
+learning_rate = 0.08
+
+[execution]
+num_threads = 1
+deterministic = true
