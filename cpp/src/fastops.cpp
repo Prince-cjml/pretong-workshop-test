@@ -8,7 +8,7 @@ extern "C" int fastops_api_version() {
     return 1;
 }
 
-extern "C" int standardize_feature(
+extern "C" int standardize_feature /* native diagnostics */(
     const float* input,
     float* output,
     int rows,
@@ -21,7 +21,8 @@ extern "C" int standardize_feature(
     if (
         rows <= 0 ||
         cols <= 0 ||
-        epsilon <= 0.0F
+        epsilon <= 0.0F ||
+        !std::isfinite(epsilon)
     ) {
         return 2;
     }
