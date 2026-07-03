@@ -13,16 +13,14 @@ target_include_directories(fastops
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/include
 )
 
-target_link_libraries(fastops
-    PRIVATE
-        Eigen::Eigen
-)
+target_link_libraries(fastops PRIVATE Eigen::Eigen)
 
 target_compile_features(fastops PRIVATE cxx_std_17)
 
 target_compile_definitions(fastops
     PRIVATE
         FASTOPS_API_VERSION=1
+        FASTOPS_ENABLE_DIAGNOSTICS=1
 )
 
 target_compile_options(fastops
