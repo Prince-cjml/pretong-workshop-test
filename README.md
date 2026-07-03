@@ -1,6 +1,6 @@
 # Hybrid ML Rescue
 
-Work only in your personal assignment repository. Do not work directly in the course upstream.
+Work only in your personal assignment repository. Do not work directly in the course upstream. You will not be granted push authorization for the course upstream. 
 
 ## Step 0: bootstrap the course project
 
