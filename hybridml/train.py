@@ -31,8 +31,11 @@ def train(checkpoint_path: Path = ROOT / "artifacts" / "model.ckpt") -> dict:
 
     x_np, y_np = make_dataset(seed)
     x_np = standardize_features(x_np)
+    split = int(0.8 * len(y_np))
     x = torch.tensor(x_np, dtype=torch.float32)
     y = torch.tensor(y_np, dtype=torch.long)
+    train_x, val_x = x[:split], x[split:]
+    train_y, val_y = y[:split], y[split:]
 
     model = TinyClassifier()
     optimizer = torch.optim.SGD(model.parameters(), lr=float(config["training"]["learning_rate"]))
@@ -40,13 +43,13 @@ def train(checkpoint_path: Path = ROOT / "artifacts" / "model.ckpt") -> dict:
     train_loss = torch.tensor(float("nan"))
     for _ in range(epochs):
         optimizer.zero_grad()
-        logits = model(x)
-        train_loss = torch.nn.functional.cross_entropy(logits, y)
+        logits = model(train_x)
+        train_loss = torch.nn.functional.cross_entropy(logits, train_y)
         train_loss.backward()
         optimizer.step()
 
     with torch.no_grad():
-        validation_accuracy = (model(x).argmax(dim=1) == y).float().mean().item()
+        validation_accuracy = (model(val_x).argmax(dim=1) == val_y).float().mean().item()
 
     state = {name: tensor.detach().cpu() for name, tensor in model.state_dict().items()}
     checkpoint = {
